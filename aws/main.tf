@@ -17,7 +17,7 @@ resource "aws_iam_openid_connect_provider" "stacks_openid_provider" {
 }
 
 resource "aws_iam_role" "stacks_role" {
-  name               = "stacks-${var.tfc_organization}-${var.tfc_project}"
+  name               = substr(replace("stacks-${var.tfc_organization}-${var.tfc_project}", "/[^\\w+=,.@-]/", "-"), 0, 64)
   assume_role_policy = data.aws_iam_policy_document.stacks_role_policy.json
 }
 
