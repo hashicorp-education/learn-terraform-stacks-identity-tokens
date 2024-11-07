@@ -37,21 +37,21 @@ data "aws_iam_policy_document" "stacks_role_policy" {
     condition {
       test     = "StringLike"
       variable = "app.terraform.io:sub"
-      values = ["organization:${var.tfc_organization}:project:${var.tfc_project}:stack:*:*"]
+      values   = ["organization:${var.tfc_organization}:project:${var.tfc_project}:stack:*:*"]
     }
   }
 }
 
 resource "aws_iam_role_policy_attachment" "iam" {
-    role = aws_iam_role.stacks_role.name
-    policy_arn = "arn:aws:iam::aws:policy/IAMFullAccess"
+  role       = aws_iam_role.stacks_role.name
+  policy_arn = "arn:aws:iam::aws:policy/IAMFullAccess"
 }
 
 resource "aws_iam_role_policy_attachment" "sudo" {
-    role = aws_iam_role.stacks_role.name
-    policy_arn = "arn:aws:iam::aws:policy/PowerUserAccess"
+  role       = aws_iam_role.stacks_role.name
+  policy_arn = "arn:aws:iam::aws:policy/PowerUserAccess"
 }
 
 output "role_arn" {
-    value = aws_iam_role.stacks_role.arn
+  value = aws_iam_role.stacks_role.arn
 }

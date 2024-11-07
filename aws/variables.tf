@@ -15,6 +15,6 @@ variable "tfc_project" {
 }
 
 variable "tfc_hostname" {
-  type = string
+  type    = string
   default = "app.terraform.io"
 }
