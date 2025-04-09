@@ -9,11 +9,8 @@ data "tls_certificate" "tfc_certificate" {
   url = "https://${var.tfc_hostname}"
 }
 
-resource "aws_iam_openid_connect_provider" "stacks_openid_provider" {
-  url            = "https://${var.tfc_hostname}"
-  client_id_list = ["aws.workload.identity"]
-
-  thumbprint_list = [data.tls_certificate.tfc_certificate.certificates[0].sha1_fingerprint]
+data "aws_iam_openid_connect_provider" "stacks_openid_provider" {
+  url = "https://${var.tfc_hostname}"
 }
 
 resource "aws_iam_role" "stacks_role" {
@@ -26,7 +23,7 @@ data "aws_iam_policy_document" "stacks_role_policy" {
     effect = "Allow"
     principals {
       type        = "Federated"
-      identifiers = [aws_iam_openid_connect_provider.stacks_openid_provider.arn]
+      identifiers = [data.aws_iam_openid_connect_provider.stacks_openid_provider.arn]
     }
     actions = ["sts:AssumeRoleWithWebIdentity"]
     condition {
