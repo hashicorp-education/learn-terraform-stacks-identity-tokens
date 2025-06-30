@@ -20,12 +20,3 @@ variable "tfc_organization" {
 variable "tfc_project" {
   type = string
 }
-
-variable "tfc_stack" {
-  type = string
-}
-
-variable "tfc_deployment" {
-  type = string
-}
-

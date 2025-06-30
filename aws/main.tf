@@ -51,7 +51,3 @@ resource "aws_iam_role_policy_attachment" "sudo" {
   role       = aws_iam_role.stacks_role.name
   policy_arn = "arn:aws:iam::aws:policy/PowerUserAccess"
 }
-
-output "role_arn" {
-  value = aws_iam_role.stacks_role.arn
-}
