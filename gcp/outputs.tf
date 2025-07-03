@@ -17,3 +17,7 @@ output "trimmed_name" {
   value       = local.trimmed_name
   description = "GCP Project ID"
 }
+
+output "debug_gcp_project_id" {
+  value = var.gcp_project_id
+}
