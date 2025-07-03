@@ -3,12 +3,13 @@
 
 provider "google" {
   region = "global"
+  project = var.gcp_project_id
 }
 
 resource "google_service_account" "terraform_stacks_sa" {
-  account_id   = "terraform-stacks-sa"
-  display_name = "Terraform Stacks Service Account"
-  description  = "Service account used by Terraform Stacks for GCP resources"
+  account_id  = local.trimmed_name
+
+  display_name = local.trimmed_name
 }
 
 locals {
@@ -17,11 +18,13 @@ locals {
     "iam.googleapis.com",
     "iamcredentials.googleapis.com"
   ]
+
+  trimmed_name = substr(replace(replace(lower("stacks-${var.hcp_organization_name}-${var.hcp_project_name}"), "/[^a-z0-9-]/", "-"), "/[$a-z0-9]+$/", ""), 0, 30)
 }
 
 resource "google_project_service" "services" {
   for_each                   = toset(local.gcp_service_list)
-  project                    = var.project_id
+  project                    = var.gcp_project_id
   service                    = each.key
   disable_dependent_services = false
   disable_on_destroy         = false
@@ -29,19 +32,18 @@ resource "google_project_service" "services" {
 
 resource "google_iam_workload_identity_pool" "terraform_stacks_pool" {
   depends_on = [google_project_service.services]
-  workload_identity_pool_id = "terraform-stacks-pool"
-  display_name              = "Terraform Stacks Pool"
-  description               = "Identity pool for Terraform Stacks authentication"
+  workload_identity_pool_id = local.trimmed_name
+  display_name              = local.trimmed_name
 }
 
 resource "google_iam_workload_identity_pool_provider" "terraform_stacks_provider" {
   workload_identity_pool_id          = google_iam_workload_identity_pool.terraform_stacks_pool.workload_identity_pool_id
-  workload_identity_pool_provider_id = "terraform-stacks-provider"
-  display_name                       = "Terraform Stacks Provider"
+  workload_identity_pool_provider_id = local.trimmed_name
+  display_name              = local.trimmed_name
   description                        = "OIDC identity pool provider for Terraform Stacks"
   
   attribute_mapping = {
-    "google.subject"                            = "assertion.sub", # WARNING - this value is has to be <=127 bytes, and is "organization:<ORG NAME>:project:<PROJ NAME>:stack:<STACK NAME>:deployment:development:operation:plan
+    "google.subject"                            = "assertion.sub",
     "attribute.aud"                             = "assertion.aud",
     "attribute.terraform_operation"             = "assertion.terraform_operation",
     "attribute.terraform_project_id"            = "assertion.terraform_project_id",
@@ -58,7 +60,7 @@ resource "google_iam_workload_identity_pool_provider" "terraform_stacks_provider
     allowed_audiences = ["hcp.workload.identity"]
   }
 
-  attribute_condition = "assertion.sub.startsWith(\"organization:${var.tfc_organization}:project:${var.tfc_project}:stack\")"
+  attribute_condition = "assertion.sub.startsWith(\"organization:${var.hcp_organization_name}:project:${var.hcp_project_name}:stack\")"
 }
 
 resource "google_service_account_iam_member" "workload_identity_user" {
@@ -68,13 +70,13 @@ resource "google_service_account_iam_member" "workload_identity_user" {
 }
 
 resource "google_project_iam_member" "sa_more_permissions" {
-  project = var.project_id
+  project = var.gcp_project_id
   role    = "roles/iam.serviceAccountTokenCreator"
   member  = "serviceAccount:${google_service_account.terraform_stacks_sa.email}"
 }
 
 resource "google_project_iam_member" "sa_editor" {
-  project = var.project_id
+  project = var.gcp_project_id
   role    = "roles/editor"
   member  = "serviceAccount:${google_service_account.terraform_stacks_sa.email}"
 }

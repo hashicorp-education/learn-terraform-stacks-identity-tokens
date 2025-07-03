@@ -15,7 +15,8 @@ data "azuread_client_config" "current" {
 }
 
 resource "azuread_application" "tfc_application" {
-  display_name = "tfc-application"
+  display_name = "stacks-application"
+  owners       = [data.azuread_client_config.current.object_id]
 }
 
 resource "azuread_service_principal" "tfc_service_principal" {
@@ -32,8 +33,8 @@ resource "azurerm_role_assignment" "tfc_role_assignment" {
 
 resource "azuread_application_federated_identity_credential" "tfc_federated_credential_apply" {
   application_id = azuread_application.tfc_application.id
-  display_name   = "my-tfc-federated-credential"
-  audiences      = [var.tfc_azure_audience]
-  issuer         = "https://${var.tfc_hostname}"
-  subject        = "organization:${var.tfc_organization}:project:${var.tfc_project}:stack:*:*"
+  display_name   = "my-stacks-federated-credential"
+  audiences      = [var.azure_audience]
+  issuer         = "https://${var.hcp_hostname}"
+  subject        = "organization:${var.hcp_organization_name}:project:${var.hcp_project_name}:stack:*:*"
 }

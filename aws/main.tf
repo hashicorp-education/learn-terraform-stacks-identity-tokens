@@ -5,19 +5,19 @@ provider "aws" {
   region = var.aws_region
 }
 
-data "tls_certificate" "tfc_certificate" {
-  url = "https://${var.tfc_hostname}"
+data "tls_certificate" "hcp_certificate" {
+  url = "https://${var.hcp_hostname}"
 }
 
 resource "aws_iam_openid_connect_provider" "stacks_openid_provider" {
-  url            = "https://${var.tfc_hostname}"
+  url            = "https://${var.hcp_hostname}"
   client_id_list = ["aws.workload.identity"]
 
-  thumbprint_list = [data.tls_certificate.tfc_certificate.certificates[0].sha1_fingerprint]
+  thumbprint_list = [data.tls_certificate.hcp_certificate.certificates[0].sha1_fingerprint]
 }
 
 resource "aws_iam_role" "stacks_role" {
-  name               = substr(replace("stacks-${var.tfc_organization}-${var.tfc_project}", "/[^\\w+=,.@-]/", "-"), 0, 64)
+  name               = substr(replace("stacks-${var.hcp_organization_name}-${var.hcp_project_name}", "/[^\\w+=,.@-]/", "-"), 0, 64)
   assume_role_policy = data.aws_iam_policy_document.stacks_role_policy.json
 }
 
@@ -37,7 +37,7 @@ data "aws_iam_policy_document" "stacks_role_policy" {
     condition {
       test     = "StringLike"
       variable = "app.terraform.io:sub"
-      values   = ["organization:${var.tfc_organization}:project:${var.tfc_project}:stack:*:*"]
+      values   = ["organization:${var.hcp_organization_name}:project:${var.hcp_project_name}:stack:*:*"]
     }
   }
 }
