@@ -2,14 +2,15 @@
 # SPDX-License-Identifier: MPL-2.0
 
 provider "google" {
-  region = "global"
+  region  = "global"
   project = var.gcp_project_id
 }
 
 resource "google_service_account" "terraform_stacks_sa" {
-  account_id  = local.trimmed_name
-
+  account_id   = local.trimmed_name
   display_name = local.trimmed_name
+
+  project = var.gcp_project_id
 }
 
 locals {
@@ -31,17 +32,19 @@ resource "google_project_service" "services" {
 }
 
 resource "google_iam_workload_identity_pool" "terraform_stacks_pool" {
-  depends_on = [google_project_service.services]
+  depends_on                = [google_project_service.services]
   workload_identity_pool_id = local.trimmed_name
   display_name              = local.trimmed_name
+
+  project = var.gcp_project_id
 }
 
 resource "google_iam_workload_identity_pool_provider" "terraform_stacks_provider" {
   workload_identity_pool_id          = google_iam_workload_identity_pool.terraform_stacks_pool.workload_identity_pool_id
   workload_identity_pool_provider_id = local.trimmed_name
-  display_name              = local.trimmed_name
+  display_name                       = local.trimmed_name
   description                        = "OIDC identity pool provider for Terraform Stacks"
-  
+
   attribute_mapping = {
     "google.subject"                            = "assertion.sub",
     "attribute.aud"                             = "assertion.aud",
@@ -56,7 +59,7 @@ resource "google_iam_workload_identity_pool_provider" "terraform_stacks_provider
     "attribute.terraform_run_id"                = "assertion.terraform_run_id",
   }
   oidc {
-    issuer_uri = "https://app.terraform.io"
+    issuer_uri        = "https://app.terraform.io"
     allowed_audiences = ["hcp.workload.identity"]
   }
 

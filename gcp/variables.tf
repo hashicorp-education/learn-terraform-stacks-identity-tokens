@@ -8,7 +8,7 @@ variable "gcp_project_id" {
 
 variable "hcp_organization_name" {
   description = "Organization name for the trust relationship."
-  type = string
+  type        = string
 }
 
 variable "hcp_project_name" {

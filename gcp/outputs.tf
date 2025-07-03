@@ -9,11 +9,11 @@ output "jwt_audience" {
 }
 
 output "gcp_project_id" {
-  value = var.gcp_project_id
+  value       = var.gcp_project_id
   description = "GCP Project ID"
 }
 
 output "trimmed_name" {
-  value = local.trimmed_name
+  value       = local.trimmed_name
   description = "GCP Project ID"
 }
