@@ -7,10 +7,14 @@ provider "google" {
 }
 
 resource "google_service_account" "terraform_stacks_sa" {
-  account_id   = local.trimmed_name
-  display_name = local.trimmed_name
+  account_id   = local.resource_name
 
   project = var.gcp_project_id
+}
+
+resource "random_pet" "workload_identity_name" {
+  length = 3
+  separator = "-"
 }
 
 locals {
@@ -20,7 +24,7 @@ locals {
     "iamcredentials.googleapis.com"
   ]
 
-  trimmed_name = substr(replace(replace(lower("stacks-${var.hcp_organization_name}-${var.hcp_project_name}"), "/[^a-z0-9-]/", "-"), "/[$a-z0-9]+$/", ""), 0, 30)
+  resource_name = substr("terraform-stacks-${random_pet.workload_identity_name.id}", 0, 30)
 }
 
 resource "google_project_service" "services" {
@@ -33,16 +37,14 @@ resource "google_project_service" "services" {
 
 resource "google_iam_workload_identity_pool" "terraform_stacks_pool" {
   depends_on                = [google_project_service.services]
-  workload_identity_pool_id = local.trimmed_name
-  display_name              = local.trimmed_name
+  workload_identity_pool_id = local.resource_name
 
   project = var.gcp_project_id
 }
 
 resource "google_iam_workload_identity_pool_provider" "terraform_stacks_provider" {
   workload_identity_pool_id          = google_iam_workload_identity_pool.terraform_stacks_pool.workload_identity_pool_id
-  workload_identity_pool_provider_id = local.trimmed_name
-  display_name                       = local.trimmed_name
+  workload_identity_pool_provider_id = local.resource_name
   description                        = "OIDC identity pool provider for Terraform Stacks"
 
   attribute_mapping = {
