@@ -24,7 +24,7 @@ locals {
     "iamcredentials.googleapis.com"
   ]
 
-  resource_name = substr("terraform-stacks-${random_pet.workload_identity_name.id}", 0, 30)
+  resource_name = substr("stacks-${random_pet.workload_identity_name.id}", 0, 30)
 }
 
 resource "google_project_service" "services" {
