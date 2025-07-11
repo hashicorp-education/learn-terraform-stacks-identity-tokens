@@ -44,7 +44,8 @@ resource "google_iam_workload_identity_pool" "terraform_stacks_pool" {
 
 resource "google_iam_workload_identity_pool_provider" "terraform_stacks_provider" {
   workload_identity_pool_id          = google_iam_workload_identity_pool.terraform_stacks_pool.workload_identity_pool_id
-  workload_identity_pool_provider_id = local.resource_name
+  workload_identity_pool_provider_id = "stacks"
+
   description                        = "OIDC identity pool provider for Terraform Stacks"
 
   attribute_mapping = {
