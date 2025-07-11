@@ -13,7 +13,7 @@ resource "google_service_account" "terraform_stacks_sa" {
 }
 
 resource "random_pet" "workload_identity_name" {
-  length = 3
+  length = 2
   separator = "-"
 }
 
@@ -24,7 +24,7 @@ locals {
     "iamcredentials.googleapis.com"
   ]
 
-  resource_name = substr("stacks-${random_pet.workload_identity_name.id}", 0, 30)
+  resource_name = substr("${random_pet.workload_identity_name.id}", 0, 15)
 }
 
 resource "google_project_service" "services" {
