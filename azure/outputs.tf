@@ -6,9 +6,9 @@ output "subscription_id" {
 }
 
 output "client_id" {
-  value = azuread_application.tfc_application.client_id
+  value = data.azuread_client_config.current.client_id
 }
 
 output "tenant_id" {
-  value = azuread_service_principal.tfc_service_principal.application_tenant_id
+  value = data.azurerm_subscription.current.tenant_id
 }

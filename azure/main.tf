@@ -15,8 +15,8 @@ data "azuread_client_config" "current" {
 }
 
 resource "azuread_application" "tfc_application" {
-  display_name = "stacks-application"
-  owners       = [data.azuread_client_config.current.object_id]
+  display_name = "tfc-application"
+  owners       = [data.azuread_client_config.current.object_id] # check if needed
 }
 
 resource "azuread_service_principal" "tfc_service_principal" {
@@ -31,10 +31,20 @@ resource "azurerm_role_assignment" "tfc_role_assignment" {
   role_definition_name = "Contributor"
 }
 
-resource "azuread_application_federated_identity_credential" "tfc_federated_credential_apply" {
+resource "azuread_application_federated_identity_credential" "dev_plan" {
   application_id = azuread_application.tfc_application.id
-  display_name   = "my-stacks-federated-credential"
-  audiences      = [var.azure_audience]
-  issuer         = "https://${var.hcp_hostname}"
-  subject        = "organization:${var.hcp_organization_name}:project:${var.hcp_project_name}:stack:*:*"
+  display_name   = "stacks-federated-credential"
+
+  audiences = [var.azure_audience]
+  issuer    = "https://${var.hcp_hostname}"
+  subject   = "organization:${var.hcp_organization_name}:project:${var.hcp_project_name}:stack:${var.hcp_stack_name}:deployment:development:operation:plan"
+}
+
+resource "azuread_application_federated_identity_credential" "dev_apply" {
+  application_id = azuread_application.tfc_application.id
+  display_name   = "stacks-federated-credential"
+
+  audiences = [var.azure_audience]
+  issuer    = "https://${var.hcp_hostname}"
+  subject   = "organization:${var.hcp_organization_name}:project:${var.hcp_project_name}:stack:${var.hcp_stack_name}:deployment:development:operation:plan"
 }
