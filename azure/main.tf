@@ -33,7 +33,7 @@ resource "azurerm_role_assignment" "tfc_role_assignment" {
 
 resource "azuread_application_federated_identity_credential" "dev_plan" {
   application_id = azuread_application.tfc_application.id
-  display_name   = "stacks-federated-credential"
+  display_name   = "stacks-dev-plan"
 
   audiences = [var.azure_audience]
   issuer    = "https://${var.hcp_hostname}"
@@ -42,9 +42,45 @@ resource "azuread_application_federated_identity_credential" "dev_plan" {
 
 resource "azuread_application_federated_identity_credential" "dev_apply" {
   application_id = azuread_application.tfc_application.id
-  display_name   = "stacks-federated-credential"
+  display_name   = "stacks-dev-apply"
 
   audiences = [var.azure_audience]
   issuer    = "https://${var.hcp_hostname}"
-  subject   = "organization:${var.hcp_organization_name}:project:${var.hcp_project_name}:stack:${var.hcp_stack_name}:deployment:development:operation:plan"
+  subject   = "organization:${var.hcp_organization_name}:project:${var.hcp_project_name}:stack:${var.hcp_stack_name}:deployment:development:operation:apply"
+}
+
+resource "azuread_application_federated_identity_credential" "test_plan" {
+  application_id = azuread_application.tfc_application.id
+  display_name   = "stacks-test-plan"
+
+  audiences = [var.azure_audience]
+  issuer    = "https://${var.hcp_hostname}"
+  subject   = "organization:${var.hcp_organization_name}:project:${var.hcp_project_name}:stack:${var.hcp_stack_name}:deployment:test:operation:plan"
+}
+
+resource "azuread_application_federated_identity_credential" "test_apply" {
+  application_id = azuread_application.tfc_application.id
+  display_name   = "stacks-test-apply"
+
+  audiences = [var.azure_audience]
+  issuer    = "https://${var.hcp_hostname}"
+  subject   = "organization:${var.hcp_organization_name}:project:${var.hcp_project_name}:stack:${var.hcp_stack_name}:deployment:test:operation:apply"
+}
+
+resource "azuread_application_federated_identity_credential" "prod_plan" {
+  application_id = azuread_application.tfc_application.id
+  display_name   = "stacks-prod-plan"
+
+  audiences = [var.azure_audience]
+  issuer    = "https://${var.hcp_hostname}"
+  subject   = "organization:${var.hcp_organization_name}:project:${var.hcp_project_name}:stack:${var.hcp_stack_name}:deployment:production:operation:plan"
+}
+
+resource "azuread_application_federated_identity_credential" "prod_apply" {
+  application_id = azuread_application.tfc_application.id
+  display_name   = "stacks-prod-apply"
+
+  audiences = [var.azure_audience]
+  issuer    = "https://${var.hcp_hostname}"
+  subject   = "organization:${var.hcp_organization_name}:project:${var.hcp_project_name}:stack:${var.hcp_stack_name}:deployment:production:operation:apply"
 }
