@@ -16,13 +16,13 @@ data "azuread_client_config" "current" {
 
 resource "azuread_application" "tfc_application" {
   display_name = "tfc-application"
-  owners       = [data.azuread_client_config.current.object_id] # check if needed
+  # owners       = [data.azuread_client_config.current.object_id]
 }
 
 resource "azuread_service_principal" "tfc_service_principal" {
   client_id                    = azuread_application.tfc_application.client_id
-  app_role_assignment_required = false
-  owners                       = [data.azuread_client_config.current.object_id]
+  # app_role_assignment_required = false
+  # owners                       = [data.azuread_client_config.current.object_id]
 }
 
 resource "azurerm_role_assignment" "tfc_role_assignment" {
