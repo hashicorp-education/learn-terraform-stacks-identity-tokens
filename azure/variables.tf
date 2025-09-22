@@ -32,5 +32,5 @@ variable "hcp_project_name" {
 variable "hcp_stack_name" {
   description = "Name of the stack for this trust relationship."
   type        = string
-  default     = "learn-terraform-stacks-deploy"
+  default     = "learn-terraform-stacks-deploy-azure"
 }
